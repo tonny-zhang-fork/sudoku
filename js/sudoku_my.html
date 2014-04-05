@@ -1,7 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
 		<title>HTML5 sudoku</title>
 		<style type="text/css">
 			body {
@@ -62,113 +63,9 @@
 				</table>
 			</div>
 		</div>
-	<script>
-			function $(id) {
-				return document.getElementById(id);
-			}
-			
-			var array_init 		= new Array(); 		//程序生成的矩阵初始化
-			var array_current 	= new Array(); 		//当前矩阵
-			var array_user 		= new Array();		//用户输入
-			
-			var sudoku = {
-				array_init: new Array(),
-				complexity: 0.5,
-				tableId: "boxGrid",
-				
-				rndNum: function () {
-					//随机数字1-9
-					return parseInt(Math.random() * 8 + 1);
-				},
-				
-				//初始化矩阵数据
-				initialize: function() {
-					//横向行
-					for(var i = 1; i <= 9; i++)
-					{
-						this.array_init[i] = new Array();
-						//纵向列
-						for(var j = 1; j <= 9; j++)
-						{
-							this.array_init[i][j] = '';
-							var newNum = this.rndNum();
-					 
-							if(this.chkRepeat(i, j, newNum))
-							{
-							alert(newNum);
-								this.array_init[i][j] = newNum;
-							}
-						}
-						
-					}
-					//alert(this.array_init.length);
-				},
-				//检测重复
-				chkRepeat: function(x, y, num) {
-				
-					alert(x);
-					for(var i = 1; i <= 9; i++)
-					{
-						//列重复 //行重复
-						if((x in this.array_init && i in this.array_init[x] && this.array_init[x][i] != '' && this.array_init[x][i] == num) || (i in this.array_init && y in this.array_init[i] && this.array_init[i][y] != '' && this.array_init[i][y] == num) )
-						{
-							alert(x);
-							//若重复则不可设置
-							return false;
-						}
-					}
-					
-					//检测所属九宫格区域内是否重复
-					var d_i = parseInt(x/3) * 3;
-					var d_j = parseInt(y/3) * 3;
-					for(var counter = 0; counter < 9; counter++)
-					{
-					alert(d_i + '/' + d_j);
-						if(d_i == x && d_j == y)
-							continue;
-						if(d_i in this.array_init && d_j in this.array_init[d_i] && this.array_init[d_i][d_j] != '' && this.array_init[d_i][d_j] == num)
-						{
-							alert(this.array_init[d_i][d_j]);
-							return false;						
-						}
-					}
-					
-					return true;
-				},
-								
-				fillTable: function() {
-					
-					//填充行
-					var trEle = "";
-					for(var i = 1; i <= 9; i++)
-					{
-						trEle += "<tr>";
-						
-						for(var j = 1; j <= 9; j++)
-						{
-							trEle += "<td>";
-							trEle += "<input type='text' value='" + this.array_init[i][j] + "' maxlength=1 id='" + i + j + "'/>";
-							trEle += "</td>";
-						}
-						trEle += "</tr>";
-						
-					}
-					alert(trEle);
-					$(this.tableId).innerHTML = trEle;
-				},
-				release: function() {
-					this.array_init = new Array();
-				},
-				exec: function() {
-					this.initialize();
-					this.fillTable();
-					alert('');
-					this.release();
-				}
-			}
-			sudoku.exec();
-			
-			
+		<script type="text/javascript" language="javascript" src="sudoku.js?v=2"></script>
+		<script>
+		
 		</script>
 	</body>
 </html>
