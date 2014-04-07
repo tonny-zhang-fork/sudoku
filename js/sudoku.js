@@ -50,6 +50,14 @@ var sudoku = {
  					tempArr.splice(rndIndex, 1);
  					continue;
  				}
+ 				else if(i > 0 && i % 3 == 0)
+ 				{
+ 					var rndIndex = Math.floor(Math.random() * (9 - j));
+ 					
+ 					this.array_init[i][j] = tempArr[rndIndex];
+ 					tempArr.splice(rndIndex, 1);
+ 					continue;
+ 				}
  				else
  				{
 					var temp = [];
