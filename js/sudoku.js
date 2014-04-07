@@ -35,14 +35,67 @@ var sudoku = {
 	},
 	//初始化矩阵数据
 	initialize: function() {
+		var i = 0;
+		do
+		{
+			var tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+			var flag = true; //本行设置成功的标准
+			for(var j = 0; j < 9; j++)
+ 			{
+ 				//第一行不做重复检测
+ 				if(i == 0)
+ 				{
+ 					var rndIndex = Math.floor(Math.random() * (9 - j));
+ 					this.array_init[i][j] = tempArr[rndIndex];
+ 					tempArr.splice(rndIndex, 1);
+ 					continue;
+ 				}
+ 				else
+ 				{
+					var temp = [];
+ 					for(var k = 0; k < tempArr.length; k++)
+ 					{
+ 						flag = this.chkRepeat(i, j, tempArr[k]);
+ 						
+ 						if(flag == true)
+ 						{
+ 							temp.push(tempArr[k]);
+ 							break;
+ 						}
+ 					}
+ 					 
+ 					if(temp.length == 0)
+ 					{
+ 						flag = false;
+ 						break;
+ 					}
+ 					var rndIndex2 = Math.floor(Math.random() * temp.length);
+ 					this.array_init[i][j] = temp[rndIndex2];
+ 				}
+ 			}
+ 			console.log('flag:', flag, i , counter, this.array_init[i]);
+ 			//行设置失败
+ 			if(flag == false)
+ 			{
+ 				/*
+ 				counter++;
+ 				if(counter > 1110)
+ 					return;
+ 				*/
+ 				continue;
+ 			}
 
+			i++;
+		}
+		while(i < 9);
+		return;
 		//横向行
 		for(var i = 0; i < 9; i++)
 		{
 			var tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 			
  			for(var j = 0; j < 9; j++)
- 			{ 				
+ 			{
  				//第一行不做重复检测
  				if(i == 0)
  				{
