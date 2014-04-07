@@ -22,25 +22,32 @@ var sudoku = {
 	getDistrict: function(n) {
 		return parseInt(n/3) * 3;
 	},
-	//初始化矩阵数据
-	initialize: function() {
-		
+	init: function() {
 		//横向行
 		for(var i = 0; i < 9; i++)
 		{
 			this.array_init[i] = new Array();
+			for(var j=0; j < 9; j++)
+			{
+				this.array_init[i][j] = '';
+			}
+		}
+	},
+	//初始化矩阵数据
+	initialize: function() {
+
+		//横向行
+		for(var i = 0; i < 9; i++)
+		{
 			var tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 			
  			for(var j = 0; j < 9; j++)
- 			{
- 				this.array_init[i][j] = '';
- 				
+ 			{ 				
  				//第一行不做重复检测
  				if(i == 0)
  				{
  					var rndIndex = Math.floor(Math.random() * (9 - j));
  					this.array_init[i][j] = tempArr[rndIndex];
- 					//
  					tempArr.splice(rndIndex, 1);
  					continue;
  				}
@@ -69,18 +76,17 @@ var sudoku = {
  						}, 200);
  						*/
 
- 						return;
+ 						//return;
  					}
  					 
  					var rndIndex2 = Math.floor(Math.random() * temp.length);
  					this.array_init[i][j] = temp[rndIndex2];
- 					console.log(temp, '/', rndIndex2, '/' , temp[rndIndex2]);
+ 					//console.log(temp, '/', rndIndex2, '/' , temp[rndIndex2]);
  				}
  			}
 		}
 		//console.log(this.array_init);
 	},
-	 
 	//检测重复
 	chkRepeat: function(x, y, num) {
 		//行重复
@@ -89,10 +95,6 @@ var sudoku = {
 			//若重复则不可设置
 			return false;
 		}
-
-		//检测所属九宫格区域内是否重复
-		var d_x = this.getDistrict(x);
-		var d_y = this.getDistrict(y);
 		
 		for(var i = 0; i < this.array_init.length; i++)
 		{
@@ -100,25 +102,37 @@ var sudoku = {
 			if(this.array_init[i][y] == num)
 			{
 				return false;
-			}	
-			//九宫格内检测
-			//i所在区域
+			}
+		}
+		//九宫格检测
+		var unit = this.getUnitNumbers(x, y);
+		//console.log('unit:', unit);
+		if(unit.indexOf(num) > -1)
+		{
+			return false;
+		}
+
+		return true;
+	},
+	getUnitNumbers: function(x, y) {
+		var d_x = this.getDistrict(x);
+		var d_y = this.getDistrict(y);
+		var temp = new Array(9);
+		for(var i = 0; i < this.array_init.length; i++)
+		{
 			var d_i = this.getDistrict(i);
 
 			for(var j = 0; j < this.array_init[i].length; j++)
 			{
 				//j所在区域
 				var d_j = this.getDistrict(j);
-				
-				if(d_i == d_x && d_j == d_y && this.array_init[i][j] == num)
+				if(d_i == d_x && d_j == d_y)
 				{
-					//若重复则不可设置
-					return false;
+					temp.push(this.array_init[i][j]);
 				}
 			}
 		}
-		
-		return true;
+		return temp;
 	},
 					
 	fillTable: function() {
@@ -165,6 +179,7 @@ var sudoku = {
 		this.array_init = new Array();
 	},
 	exec: function() {
+		this.init();
 		this.initialize();
 		this.fillTable();
 		this.rndBg();
