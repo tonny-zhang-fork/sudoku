@@ -23,167 +23,146 @@ var sudoku = {
 		return parseInt(n/3) * 3;
 	},
 	init: function() {
-		//横向行
 		for(var i = 0; i < 9; i++)
 		{
 			this.array_init[i] = new Array();
-			for(var j=0; j < 9; j++)
-			{
-				this.array_init[i][j] = '';
-			}
+            var tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+            for(var j=0; j < 9; j++)
+            {
+                //随机初始第一行
+                if(i == 0)
+                {
+                    var rndIndex = Math.floor(Math.random() * (9 - j));
+
+                    this.array_init[i][j] = tempArr[rndIndex];
+                    tempArr.splice(rndIndex, 1);
+
+                    continue;
+                }
+                this.array_init[i][j] = 0;
+            }
 		}
 	},
+
 	//初始化矩阵数据
-	initialize: function() {
-		var i = 0;
+    fillInit: function() {
+        //从i = 1行开始
+		var i = 1;
+        var able = true;
 		do
 		{
-			var tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-			var flag = true; //本行设置成功的标准
 			for(var j = 0; j < 9; j++)
  			{
- 				//第一行不做重复检测
- 				if(i == 0)
- 				{
- 					var rndIndex = Math.floor(Math.random() * (9 - j));
- 					this.array_init[i][j] = tempArr[rndIndex];
- 					tempArr.splice(rndIndex, 1);
- 					continue;
- 				}
- 				else if(i > 0 && i % 3 == 0)
- 				{
- 					var rndIndex = Math.floor(Math.random() * (9 - j));
- 					
- 					this.array_init[i][j] = tempArr[rndIndex];
- 					tempArr.splice(rndIndex, 1);
- 					continue;
- 				}
- 				else
- 				{
-					var temp = [];
- 					for(var k = 0; k < tempArr.length; k++)
- 					{
- 						flag = this.chkRepeat(i, j, tempArr[k]);
- 						
- 						if(flag == true)
- 						{
- 							temp.push(tempArr[k]);
- 							break;
- 						}
- 					}
- 					 
- 					if(temp.length == 0)
- 					{
- 						flag = false;
- 						break;
- 					}
- 					var rndIndex2 = Math.floor(Math.random() * temp.length);
- 					this.array_init[i][j] = temp[rndIndex2];
- 				}
- 			}
- 			console.log('flag:', flag, i , counter, this.array_init[i]);
- 			//行设置失败
- 			if(flag == false)
- 			{
- 				/*
- 				counter++;
- 				if(counter > 1110)
- 					return;
- 				*/
- 				continue;
+                var flag = false; //判断(i,j)是否可以存放
+                var conflict = 9;
+                for(var n = 1; n < 10; n++)
+                {
+                    flag = this.chkRow(i, n);
+                    if(flag)
+                        flag = this.chkCol(i, j, n);
+
+                    if(flag)
+                        flag = this.chkUnit(i, j, n);
+                    if(flag)
+                    {
+                        this.array_init[i][j] = n;
+                        break;//跳出循环进行下一列
+                    }
+                }
+                if(!flag)
+                {
+                    do
+                    {
+                        var rt = false;
+
+                        //和本行前面的数字进行交换
+                        for(var k = 0; k < j; k++)
+                        {
+                            //如果i行前面已经出现此conflict;
+                            if(!this.chkRow(i, conflict))
+                            {
+                                rt = false;
+                                break;
+                            }
+                            //不检测同行,检测col和unit
+                            //检测被交换的数字是否在(i, j)冲突
+                            var flag_col = this.chkCol(i, j, this.array_init[i][k]); 
+                            if(!flag_col)
+                                continue;
+                            var flag_unit = this.chkUnit(i, j, this.array_init[i][k]);
+                            if(!flag_unit)
+                                continue;
+
+                            //检测是否冲突的数字(i, k)是否冲突
+                            flag_col = this.chkCol(i, k, conflict);
+                            if(!flag_col)
+                                continue;
+                            flag_unit = this.chkUnit(i, k, conflict);
+                            if(!flag_unit)
+                                continue;
+
+                            //将(i,k)的数字赋值(i, j)
+                            this.array_init[i][j] = this.array_init[i][k];
+                            this.array_init[i][k] = conflict;
+                            rt = true;
+                            
+                            break;
+                        }
+
+                        if(rt)
+                            break;
+
+                        conflict--;
+                    }
+                    while(conflict > 0);
+                }
  			}
 
 			i++;
 		}
 		while(i < 9);
 		return;
-		//横向行
-		for(var i = 0; i < 9; i++)
-		{
-			var tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-			
- 			for(var j = 0; j < 9; j++)
- 			{
- 				//第一行不做重复检测
- 				if(i == 0)
- 				{
- 					var rndIndex = Math.floor(Math.random() * (9 - j));
- 					this.array_init[i][j] = tempArr[rndIndex];
- 					tempArr.splice(rndIndex, 1);
- 					continue;
- 				}
- 				else
- 				{
- 					var temp = [];
- 					for(var k = 0; k < tempArr.length; k++)
- 					{
- 						flag = this.chkRepeat(i, j, tempArr[k]);
- 						
- 						if(flag == true)
- 						{
- 							temp.push(tempArr[k]);
- 							break;
- 						}
- 					}
- 					 
- 					if(temp.length == 0)
- 					{
- 						counter++;
- 						console.log("counter:",counter);
- 						//this.initialize();
- 						/*
- 						setTimeout(function(){
-							location.reload();
- 						}, 200);
- 						*/
-
- 						//return;
- 					}
- 					 
- 					var rndIndex2 = Math.floor(Math.random() * temp.length);
- 					this.array_init[i][j] = temp[rndIndex2];
- 					//console.log(temp, '/', rndIndex2, '/' , temp[rndIndex2]);
- 				}
- 			}
-		}
-		//console.log(this.array_init);
 	},
-	//检测重复
-	chkRepeat: function(x, y, num) {
-		//行重复
-		if((this.array_init[x] && this.array_init[x].indexOf(num) > -1 ))
-		{
-			//若重复则不可设置
-			return false;
-		}
-		
-		for(var i = 0; i < this.array_init.length; i++)
-		{
-			//列重复
-			if(this.array_init[i][y] == num)
-			{
-				return false;
-			}
-		}
-		//九宫格检测
-		var unit = this.getUnitNumbers(x, y);
-		//console.log('unit:', unit);
-		if(unit.indexOf(num) > -1)
-		{
-			return false;
-		}
+    //行重复检测
+    chkRow: function(x, num) {
+        if((this.array_init[x] && this.array_init[x].indexOf(num) > -1 ))
+        {
+            return false;
+        }
+        return true;
+    },
+    //列重复
+    chkCol: function(x, y, num) {
+        for(var i = 0; i < x; i++)
+        {
+            if(this.array_init[i][y] == num)
+            {
+                return false;
+            }
+        }
+        return true;
+    },
 
-		return true;
-	},
+    //九宫格检测
+    chkUnit: function(x, y, num) {
+        var unit = this.getUnitNumbers(x, y);
+        if(unit.indexOf(num) > -1)
+        {
+            return false;
+        }
+        return true;
+    },
+
+    //获取九宫格内的数字
 	getUnitNumbers: function(x, y) {
 		var d_x = this.getDistrict(x);
 		var d_y = this.getDistrict(y);
-		var temp = new Array(9);
-		for(var i = 0; i < this.array_init.length; i++)
+		var temp = [];
+		for(var i = 0; i < x; i++)
 		{
 			var d_i = this.getDistrict(i);
 
-			for(var j = 0; j < this.array_init[i].length; j++)
+			for(var j = 0; j < (d_y+3); j++)
 			{
 				//j所在区域
 				var d_j = this.getDistrict(j);
@@ -223,7 +202,7 @@ var sudoku = {
 				trEle += ">";
 				var disable = '';
 				var val = '';
-				if(this.array_init[i] && this.array_init[i][j] != '')
+				//if(this.array_init[i] && this.array_init[i][j] != '')
 				{
 					disable = 'disabled';
 					val = this.array_init[i][j];
@@ -236,15 +215,11 @@ var sudoku = {
 		}
 		$(this.tableId).innerHTML = trEle;
 	},
-	release: function() {
-		this.array_init = new Array();
-	},
 	exec: function() {
 		this.init();
-		this.initialize();
+		this.fillInit();
 		this.fillTable();
 		this.rndBg();
-		this.release();
 	}
 }
 sudoku.exec();
