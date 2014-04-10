@@ -47,10 +47,10 @@ var sudoku = {
 	//初始化矩阵数据
     fillInit: function() {
         //从i = 1行开始
-		var i = 1;
-        var able = true;
-		do
-		{
+        var i = 1;
+        var setted = true;
+        do
+        {
 			for(var j = 0; j < 9; j++)
  			{
                 var flag = false; //判断(i,j)是否可以存放
@@ -84,6 +84,7 @@ var sudoku = {
                                 rt = false;
                                 break;
                             }
+                            console.log('(i, j)', i, j, 'conflict:', conflict);
                             //不检测同行,检测col和unit
                             //检测被交换的数字是否在(i, j)冲突
                             var flag_col = this.chkCol(i, j, this.array_init[i][k]); 
@@ -115,12 +116,21 @@ var sudoku = {
                         conflict--;
                     }
                     while(conflict > 0);
+                    if(conflict < 1) //没有设置成功
+                    {
+                        setted = false;
+                        break;
+                    }
                 }
- 			}
 
-			i++;
+ 			}
+            if(!setted)
+            {
+                window.location.reload();
+            }
+            i++;
 		}
-		while(i < 9);
+        while(i < 9);
 		return;
 	},
     //行重复检测
@@ -184,29 +194,23 @@ var sudoku = {
 			trEle += "<tr ";
 			//横向
 			if(i < 8 && (i+1)%3 == 0)
-			{
 				trEle += "class='boldBottom'";
-			}
 			trEle += ">";
 			for(var j = 0; j < 9; j++)
 			{
-
-
 				trEle += "<td ";
 				//纵向
 				if(j < 8 && (j+1)%3 == 0 )
-				{
 					trEle += "class='boldRight'";
-				}
 
 				trEle += ">";
 				var disable = '';
 				var val = '';
-				//if(this.array_init[i] && this.array_init[i][j] != '')
-				{
-					disable = 'disabled';
-					val = this.array_init[i][j];
-				}
+                if(Math.random() > this.complexity)
+                {
+                    disable = 'disabled';
+                    val = this.array_init[i][j];
+                }
 				trEle += "<input type='text' value='" + val + "' " + disable + " maxlength=1 id='g_" + i + j + "'/>";
 				trEle += "</td>";
 			}
