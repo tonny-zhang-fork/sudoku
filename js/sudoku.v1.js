@@ -5,7 +5,8 @@ function $(id) {
 //生成数独矩阵使用挖洞算法
 var counter = 0;
 var sudoku = {
-	array_init: new Array(),
+	array_init: [],//程序初始的矩阵
+	array_user: [],//玩家输入的结果矩阵
 	complexity: 0.5,
 	tableId: "boxGrid",
 	
@@ -62,10 +63,10 @@ var sudoku = {
                     setted = false;
             }
 
-            if(setted)
+            if(setted == true)
             {
                 this.array_init[x][y] = n;
-                console.log(x,y, n, setted);
+                console.log('(', x, y, ')', n, setted);
                 if(y < 8) //先设置列
                 {
                     if(this.fillInit(x, y + 1))
@@ -73,20 +74,20 @@ var sudoku = {
                 }
                 else
                 {
+                	y = 0;
                     //再设置行
                     if(x < 8)
                     {
-                        if(y == 8)
-                            y = 0;
+                        
                         if(this.fillInit(x + 1, y))
                             return true;
                     }
                     else
                         return true;
                 }
-
-
             }
+            this.array_init[x][y] = 0;
+            console.log('un:(', x, y, ')', n, setted);
         }
 
 		return false;
@@ -145,10 +146,8 @@ var sudoku = {
 			}
 		}
 		return temp;
-	},
-					
+	},	
 	fillTable: function() {
-		
 		//填充行
 		var trEle = "";
 		for(var i = 0; i < 9; i++)
@@ -168,7 +167,7 @@ var sudoku = {
 				trEle += ">";
 				var disable = '';
 				var val = '';
-                //if(!false && Math.random() > this.complexity)
+                if(!false && Math.random() > this.complexity)
                 {
                     disable = 'disabled';
                     val = this.array_init[i][j];
@@ -186,6 +185,26 @@ var sudoku = {
 		this.fillInit();
 		this.fillTable();
 		this.rndBg();
+	},
+	chkUserArray: function() {
+		//获取客户端的整个矩阵
+		for(var i = 0; i < 9; i++)
+		{
+			for(var j = 0; j < 9; j++)
+			{
+				this.array_user[i] = [];
+				var val = parseInt($('g_' + i + j).value);
+				if(!val)
+				{
+					alert("您尚未完成此题目，请完成后再检查结果");
+					return;
+				}
+				this.array_user[i][j] = val;
+				
+			}
+		}
+
+
 	}
 }
 sudoku.exec();
