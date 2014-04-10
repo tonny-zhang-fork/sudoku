@@ -37,10 +37,59 @@ var sudoku = {
 		}
 	},
 
-	//初始化矩阵数据
-    fillInit: function(x = 0, y = 0) {
-        console.log(x, y);
-		return;
+	//递归
+    fillInit: function(x, y) {
+        x = arguments[0] || 1;
+        y = arguments[1] || 0;
+        if(x > 8 || y > 8)
+            return true;
+
+        for(var n = 1; n < 10; n++)
+        {
+            var setted = true;
+            if(!this.chkRow(x, n))
+                setted = false;
+
+            if(setted)
+            {
+                if(!this.chkCol(x, y, n))
+                    setted = false;
+            }
+
+            if(setted)
+            {
+                if(!this.chkUnit(x, y, n))
+                    setted = false;
+            }
+
+            if(setted)
+            {
+                this.array_init[x][y] = n;
+                console.log(x,y, n, setted);
+                if(y < 8) //先设置列
+                {
+                    if(this.fillInit(x, y + 1))
+                        return true;
+                }
+                else
+                {
+                    //再设置行
+                    if(x < 8)
+                    {
+                        if(y == 8)
+                            y = 0;
+                        if(this.fillInit(x + 1, y))
+                            return true;
+                    }
+                    else
+                        return true;
+                }
+
+
+            }
+        }
+
+		return false;
 	},
     //行重复检测
     chkRow: function(x, num) {
@@ -72,6 +121,10 @@ var sudoku = {
         return true;
     },
 
+	//获取九宫格域
+	getDistrict: function(n) {
+		return parseInt(n/3) * 3;
+	},
     //获取九宫格内的数字
 	getUnitNumbers: function(x, y) {
 		var d_x = this.getDistrict(x);
@@ -115,7 +168,7 @@ var sudoku = {
 				trEle += ">";
 				var disable = '';
 				var val = '';
-                if(Math.random() > this.complexity)
+                //if(!false && Math.random() > this.complexity)
                 {
                     disable = 'disabled';
                     val = this.array_init[i][j];
